@@ -1,7 +1,7 @@
 from numpy import *;
 import scipy.linalg;
 import serial;
-
+import math;
 import time;
 
 class PositionParam:
@@ -76,7 +76,7 @@ class PositionSolver:
         [y6, z6] = param.getCoordinate(5);
         A = array([[x1, y1, 1], [x2, y2, 1], [x3, y3, 1]]);
         b = array([[v[0]], [v[1]], [v[2]]]);
-
+        
         r = linalg.solve(A, b);
         A1 = r[0][0];
         B1 = r[1][0];
@@ -159,9 +159,14 @@ if __name__ == '__main__':
         #print(result);
         c = result.getPosition();
         Q = result.getDcm();
+        #print "%.6f\t%.6f\t%.6f" % (c[0], c[1], c[2]);
         #print(c);
-        print(Q);
-		#print(Q * Q.T);
+        #print(Q);
+        time.sleep(1);
+        psi = -math.atan(Q[1][0] / Q[1][1]);
+        phi = math.asin(Q[1][2]);
+        print "%f\t%f" % (psi * 180 / math.pi * 60, phi * 180 / math.pi * 60); 
+        #print(Q * Q.T);
         #recoder.add(t, c, Q);
         #print(recoder.getVelocity());
         #print(recoder.getAcceleration());
