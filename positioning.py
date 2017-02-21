@@ -159,7 +159,7 @@ if __name__ == '__main__':
         #print(result);
         c = result.getPosition();
         Q = result.getDcm();
-        #print "%.6f\t%.6f\t%.6f" % (c[0], c[1], c[2]);
+        #print "%.3f\t%.3f\t%.3f" % (c[0] * 1000, c[1] * 1000, c[2] * 1000);
         #print(c);
         #print(Q);
         time.sleep(1);
