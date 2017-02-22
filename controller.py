@@ -1,5 +1,6 @@
 from numpy import *;
 import scipy.integrate;
+import math;
 
 class PositionControllerParam:
     def __init__(self, m, K, Kd):
@@ -46,11 +47,21 @@ class AttitudeController:
 
 class IOConverterParam:
     def __init__(self, r1, r2, d1, d2, d3):
-        self.r1 = r1;
-        self.r2 = r2;
-        self.d1 = d1;
-        self.d2 = d2;
-        self.d3 = d3;
+        Tm = zeros((6, 6));
+        rt3 = math.sqrt(3);
+        
+        Tm[0] = array([(rt3 * r2 - d1 / 2) / (rt3 * d2 - d1 / 2), 0, 0, 0, 0, 1 / d2]);
+        Tm[1] = array([0, -d3 / d2, r2 / (2 * r1 + r2), 1 / d2, 0, 0]);
+        Tm[2] = array([r1 / (rt3 * d2 - d1 / 2), 1, 0, 0, 0, 1 / (rt3 * d2)]);
+        Tm[3] = array([d3 / (2 * d1), d3 / (2 * d2), r1 / (2 * r1 + r2), -1 / (2 * d2), 1 / d1, 0]);
+        Tm[4] = array([r1 / (rt3 * d2 - d1 / 2), -1, 0, 0, 0, 1 / (rt3 * d2)]);
+        Tm[5] = array([-d3 / (2 * d1), d3 / (2 * d2), r1 / (2 * r1 + r2), -1 / (2 * d2), -1 / d1, 0]);
+
+        self.Tm = Tm;
+
+    def getTransitionMatrix(self):
+        return self.Tm;
+
 
 class IOConverter:
     def __init__(self, param):
@@ -60,7 +71,7 @@ class IOConverter:
         O = zeros(6);
         O[0:3] = F;
         O[3:6] = T;
-        I = eye(6).dot(O);
+        I = self.param.getTransitionMatrix().dot(O);
         return I;
 
 if __name__ == '__main__':
@@ -74,11 +85,11 @@ if __name__ == '__main__':
     Kd = array([-3, -3, -3]);
     pc = PositionController(PositionControllerParam(m, K, Kd));
 
-    r1 = 1;
-    r2 = 1;
-    d1 = 1;
-    d2 = 1;
-    d3 = 1;
+    r1 = 0.0667;
+    r2 = 0.0667;
+    d1 = 0.1100;
+    d2 = 0.1334;
+    d3 = 0.2;
 
     xc0 = array([0.01, 0.02, -0.03]);
     vc0 = array([0, 0, 0]);
@@ -98,6 +109,11 @@ if __name__ == '__main__':
         ydot[3:6] = pc.getControlForce(y[0:3], y[3:6]) / m;
         return ydot;
     print(scipy.integrate.odeint(f1, y0, linspace(0, 15, 101)));
+
+    y0 = zeros(12);
+    for i in range(0, 3):
+        y0[(i * 3):(i * 3 + 3)] = dcm0[i];
+    y0[9:12] = omega0;
 
     def f2(y, t):
         ydot = zeros(12);
@@ -121,12 +137,6 @@ if __name__ == '__main__':
 
         ydot[9:12] = omegadot;
         return ydot;
-
-    y0 = zeros(12);
-    for i in range(0, 3):
-        y0[(i * 3):(i * 3 + 3)] = dcm0[i];
-    y0[9:12] = omega0;
-
     print(scipy.integrate.odeint(f2, y0, linspace(0, 15, 101)));
 
     converter = IOConverter(IOConverterParam(r1, r2, d1, d2, d3));
