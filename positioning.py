@@ -22,9 +22,9 @@ class PositionResult:
 class PositionRecoder:
     def __init__(self):
         self.queue = [];
-        #self.fp = open("DATA", "w");
+        self.fp = open("DATA", "w");
     def add(self, t, r, Q):
-        #self.fp.write("%.6f,%s,%s,%s,%s\n" % (t, str(r), str(Q[0]), str(Q[1]), str(Q[2])));
+        self.fp.write("%.6f,%s,%s,%s,%s\n" % (t, str(r), str(Q[0]), str(Q[1]), str(Q[2])));
         self.queue.append((t, r, Q));
         if len(self.queue) > 100:
             del self.queue[0];
@@ -121,11 +121,15 @@ class PositionSolver:
 class SensorReader:
     def __init__(self, port, baudrate):
         self.serial = serial.Serial(port, baudrate, timeout=1);
+        self.v0 = [0.030, 0.030, 0.030, 0.030, 0.030, 0.030];
     def read(self):
         self.serial.write("M0\r\n");
         data = self.serial.readline().rstrip("\r\n").lstrip("M0,").split(",");
         for i in range(0, 6):
             data[i] = (30.0 - float(data[i])) / 1000;
+            if data[i] > 0.129:
+                data[i] = self.v0[i];
+        self.v0 = data;
         return data;
 
 if __name__ == '__main__':
