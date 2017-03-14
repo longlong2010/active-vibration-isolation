@@ -62,7 +62,8 @@ class PositionRecoder:
             Q = r1[2];
             dQ = r2[2] - r1[2];
             dt = r2[0] - r1[0];
-            return (dQ / dt).dot(Q.T);
+            Omega = (dQ / dt).dot(Q.T);
+            return array([Omega[1][2], Omega[2][0], Omega[0][1]]);
 
 
 class PositionSolver:

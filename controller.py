@@ -3,28 +3,34 @@ import scipy.integrate;
 import math;
 
 class PositionControllerParam:
-    def __init__(self, m, K, Kd):
+    def __init__(self, m, K, Kd, Ki):
         self.m = m;
         self.K = K;
         self.Kd = Kd;
+        self.Ki = Ki;
     def getMass(self):
         return self.m;
     def getK(self):
         return self.K;
     def getKd(self):
         return self.Kd;
+    def getKi(self):
+        return self.Ki;
 
 class AttitudeControllerParam:
-    def __init__(self, I, K, Kd):
+    def __init__(self, I, K, Kd, Ki):
         self.I = I;
         self.K = K;
         self.Kd = Kd;
+        self.Ki = Ki;
     def getInertia(self):
         return self.I;
     def getK(self):
         return self.K;
     def getKd(self):
         return self.Kd;
+    def getKi(self):
+        return self.Ki;
 
 class PositionController:
     def __init__(self, param):
@@ -38,11 +44,14 @@ class PositionController:
 class AttitudeController:
     def __init__(self, param):
         self.param = param;
-    def getControlTorque(self, dcm, omega):
+        self.integrator = Integrator(array([0.0, 0.0, 0.0]));
+    def getControlTorque(self, dcm, omega, t):
         K = self.param.getK();
         Kd = self.param.getKd();
+        Ki = self.param.getKi();
         e = array([dcm[2][1] - dcm[1][2], dcm[0][2] - dcm[2][1], dcm[1][0] - dcm[0][1]]);
-        T = 0.5 * e * K + omega * Kd;
+        Ie = self.integrator.integrate(e, t);
+        T = 0.5 * (e * K + Ie * Ki) + omega * Kd;
         return T;
 
 class IOConverterParam:
@@ -62,6 +71,18 @@ class IOConverterParam:
     def getTransitionMatrix(self):
         return self.Tm;
 
+class Integrator:
+    def __init__(self, u = 0, v = None, t = None):
+        self.v = v;
+        self.t = t;
+        self.u = u;
+    def integrate(self, v, t):
+        if self.t != None:
+            dt = t - self.t;
+            self.u += (v + self.v) / 2 * dt;
+        self.t = t;
+        self.v = v;
+        return self.u;
 
 class IOConverter:
     def __init__(self, param):
