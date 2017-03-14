@@ -23,37 +23,14 @@ class Actuator:
 
     def execute(self, F):
         Fc = self.param.getCalibration();
-        for i in range(0, 2):
-            m1 = self.h1.getMotor(i + 1);
-            if F[i] > 0:
-                m1.run(Raspi_MotorHAT.FORWARD);
+        for i in range(1, 4):
+            m = self.h1.getMotor(i);
+            k = (i - 1) * 2;
+            if F[k] > 0:
+                m.run(Raspi_MotorHAT.FORWARD);
             else:
-                m1.run(Raspi_MotorHAT.BACKWARD);
-
-            m1.setSpeed(int(F[i] / Fc[i] * 255));
-
-            #m2 = self.h2.getMotor(i + 1);
-            #if F[i + 2] > 0:
-            #    m2.run(Raspi_MotorHAT.FORWARD);
-            #else:
-            #    m2.run(Raspi_MotorHAT.BACKWARD);
-            #
-            #m2.setSpeed(int(F[i + 2] / Fc[i + 2] * 255));
-        
-        m1 = self.h1.getMotor(3);
-        if F[4] > 0:
-            m1.run(Raspi_MotorHAT.FORWARD);
-        else:
-            m1.run(Raspi_MotorHAT.BACKWARD);
-       
-        m1.setSpeed(int(F[4] / Fc[i] * 255));
-
-        #m2 = self.h2.getMotor(3);
-        #if F[5] > 0:
-        #    m2.run(Raspi_MotorHAT.FORWARD);
-        #else:
-        #    m2.run(Raspi_MotorHAT.BACKWARD);
-        #m1.setSpeed(int(F[5] / Fc[i] * 255));
+                m.run(Raspi_MotorHAT.BACKWARD);
+            m.setSpeed(int(abs(F[k]) / Fc[k] * 255));
 
 if __name__ == '__main__':
     Fc = array([1.5, 1.5, 1.5, 1.5, 1.5, 1.5]);

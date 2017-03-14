@@ -22,9 +22,9 @@ class PositionResult:
 class PositionRecoder:
     def __init__(self):
         self.queue = [];
-        self.fp = open("DATA", "w");
+        #self.fp = open("DATA", "w");
     def add(self, t, r, Q):
-        self.fp.write("%.6f,%s,%s,%s,%s\n" % (t, str(r), str(Q[0]), str(Q[1]), str(Q[2])));
+        #self.fp.write("%.6f,%s,%s,%s,%s\n" % (t, str(r), str(Q[0]), str(Q[1]), str(Q[2])));
         self.queue.append((t, r, Q));
         if len(self.queue) > 100:
             del self.queue[0];
@@ -59,6 +59,7 @@ class PositionRecoder:
         if n > 1:
             r1 = self.queue[n - 1];
             r2 = self.queue[n];
+            Q = r1[2];
             dQ = r2[2] - r1[2];
             dt = r2[0] - r1[0];
             return (dQ / dt).dot(Q.T);
@@ -68,12 +69,12 @@ class PositionSolver:
     def __init__(self, param):
         self.param = param;
     def solve(self, v):
-        [x1, y1] = param.getCoordinate(0);
-        [x2, y2] = param.getCoordinate(1);
-        [x3, y3] = param.getCoordinate(2);
-        [x4, z4] = param.getCoordinate(3);
-        [x5, z5] = param.getCoordinate(4);
-        [y6, z6] = param.getCoordinate(5);
+        [x1, y1] = self.param.getCoordinate(0);
+        [x2, y2] = self.param.getCoordinate(1);
+        [x3, y3] = self.param.getCoordinate(2);
+        [x4, z4] = self.param.getCoordinate(3);
+        [x5, z5] = self.param.getCoordinate(4);
+        [y6, z6] = self.param.getCoordinate(5);
         A = array([[x1, y1, 1], [x2, y2, 1], [x3, y3, 1]]);
         b = array([[v[0]], [v[1]], [v[2]]]);
         

@@ -29,10 +29,10 @@ class AttitudeControllerParam:
 class PositionController:
     def __init__(self, param):
         self.param = param;
-    def getControlForce(self, xc, vc):
+    def getControlForce(self, xt, xc, vc):
         K = self.param.getK();
         Kd = self.param.getKd();
-        F = xc * K + vc * Kd;
+        F = (xc  - xt) * K + vc * Kd;
         return F;
 
 class AttitudeController:
