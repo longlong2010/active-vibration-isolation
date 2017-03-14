@@ -50,12 +50,12 @@ class IOConverterParam:
         Tm = zeros((6, 6));
         rt3 = math.sqrt(3);
         
-        Tm[0] = array([(rt3 * r2 - d1 / 2) / (rt3 * d2 - d1 / 2), 0, 0, 0, 0, 1 / d2]);
-        Tm[1] = array([0, -d3 / d2, r2 / (2 * r1 + r2), 1 / d2, 0, 0]);
-        Tm[2] = array([r1 / (rt3 * d2 - d1 / 2), 1, 0, 0, 0, 1 / (rt3 * d2)]);
-        Tm[3] = array([d3 / (2 * d1), d3 / (2 * d2), r1 / (2 * r1 + r2), -1 / (2 * d2), 1 / d1, 0]);
-        Tm[4] = array([r1 / (rt3 * d2 - d1 / 2), -1, 0, 0, 0, 1 / (rt3 * d2)]);
-        Tm[5] = array([-d3 / (2 * d1), d3 / (2 * d2), r1 / (2 * r1 + r2), -1 / (2 * d2), -1 / d1, 0]);
+        Tm[0] = array([(rt3 * r2 - d1 / 2) / (rt3 * d2 - d1 / 2), 0, 0, 0, 0, -rt3 / (rt3 * d2 - d1 / 2)]);
+        Tm[1] = array([0, -d3 / d2, r2 / d2, 1 / d2, 0, 0]);
+        Tm[2] = array([r1 / (rt3 * d2 - d1 / 2), 1, 0, 0, 0, 1 / (rt3 * d2 - d1 / 2)]);
+        Tm[3] = array([d3 / d1, d3 / (2 * d2), r1 / (2 * d2), -1 / (2 * d2), 1 / d1, 0]);
+        Tm[4] = array([r1 / (rt3 * d2 - d1 / 2), -1, 0, 0, 0, 1 / (rt3 * d2 - d1 / 2)]);
+        Tm[5] = array([-d3 / d1, d3 / (2 * d2), r1 / (2 * d2), -1 / (2 * d2), -1 / d1, 0]);
 
         self.Tm = Tm;
 

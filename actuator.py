@@ -56,6 +56,6 @@ class Actuator:
         #m1.setSpeed(int(F[5] / Fc[i] * 255));
 
 if __name__ == '__main__':
-    Fc = array([2.0, 2.0, 2.0, 2.0, 2.0, 2.0]);
+    Fc = array([1.5, 1.5, 1.5, 1.5, 1.5, 1.5]);
     act = Actuator(0x6f, 0x61, ActuatorParam(Fc));
     act.execute(array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]));
