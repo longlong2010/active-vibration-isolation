@@ -30,8 +30,8 @@ solver = PositionSolver(param);
 reader = SensorReader('/dev/ttyUSB0', 9600);
 
 I = array([11581946.33, 18047496.42, 29576720.71]) * 1e-9;
-K = array([0.1, 0.1, 0.5]);
-Kd = array([-0.1, -0.1, -0.1]);
+K = array([0.1, 0.1, 0.1]);
+Kd = array([-0.1, -0.1, -0.2]);
 ac = AttitudeController(AttitudeControllerParam(I, K, Kd));
 
 m = 2.1;
@@ -62,23 +62,27 @@ d3 = 0.05;
 
 converter = IOConverter(IOConverterParam(r1, r2, d1, d2, d3));
 
+v0 = [0.030, 0.030, 0.030, 0.030, 0.030, 0.030];
 while True:
     t = time.time();
     v = reader.read();
+    for i in range(0, len(v)):
+        if v[i] > 0.129:
+            v[i] = v0[i];
+    v0 = v;
     result = solver.solve(v);
+
     c = result.getPosition();
     Q = result.getDcm();
     
     xc = c + Q.T.dot(r);
     recoder.add(t, xc, Q);
-    v = recoder.getVelocity();
+    vc = recoder.getVelocity();
     Omega = recoder.getAngularVelocity();
     
     if v != None and Omega != None:
         omega = array([Omega[1][2], Omega[2][0], Omega[0][1]]);
-        F = pc.getControlForce(xt, xc, v);
-        print(xc - xt);
+        F = pc.getControlForce(xt, xc, vc);
         T = ac.getControlTorque(Q, omega);
         Fc = converter.getInput(F, T);
         actuator.execute(Fc);
-
