@@ -35,10 +35,14 @@ class AttitudeControllerParam:
 class PositionController:
     def __init__(self, param):
         self.param = param;
-    def getControlForce(self, xt, xc, vc):
+        self.integrator = Integrator(array([0.0, 0.0, 0.0]));
+    def getControlForce(self, xt, xc, vc, t):
         K = self.param.getK();
         Kd = self.param.getKd();
-        F = (xc  - xt) * K + vc * Kd;
+        Ki = self.param.getKi();
+        xe = xc - xt;
+        Ie = self.integrator.integrate(xe, t);
+        F = xe * K + Ie * Ki + vc * Kd;
         return F;
 
 class AttitudeController:

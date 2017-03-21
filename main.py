@@ -32,13 +32,13 @@ reader = SensorReader('/dev/ttyUSB0', 9600);
 I = array([11581946.33, 18047496.42, 29576720.71]) * 1e-9;
 K = array([0.1, 0.1, 0.5]);
 Kd = array([-0.1, -0.1, -0.1]);
-Ki = array([0.01, 0.01, 0.02]);
+Ki = array([0.01, 0.01, 0.05]);
 ac = AttitudeController(AttitudeControllerParam(I, K, Kd, Ki));
 
 m = 2.1;
 K = array([-10, -10, -10]);
 Kd = array([-5, -5, -5]);
-Ki = array([0, 0, 0]);
+Ki = array([-0.2, -0.2, -0.2]);
 pc = PositionController(PositionControllerParam(m, K, Kd, Ki));
 
 r1 = 0.0667;
@@ -47,7 +47,7 @@ d1 = 0.1100;
 d2 = 0.1334;
 d3 = 0.2;
 
-c0 = array([0.031,  0.032,  0.031]);
+c0 = array([ 0.03000872,  0.03003456,  0.02824083]);
 r = array([0.022, -0.089, 0.06]);
 xt = c0 + r;
 
@@ -78,14 +78,14 @@ while True:
     Q = result.getDcm();
     
     xc = c + Q.T.dot(r);
+    
     recoder.add(t, xc, Q);
     vc = recoder.getVelocity();
     omega = recoder.getAngularVelocity();
     
     if v != None and omega != None:
-        F = pc.getControlForce(xt, xc, vc);
+        F = pc.getControlForce(xt, xc, vc, t);
+        print(F);
         T = ac.getControlTorque(Q, omega, t);
-        #T[2] += 0.016;
-        print(T);
         Fc = converter.getInput(F, T);
         actuator.execute(Fc);
