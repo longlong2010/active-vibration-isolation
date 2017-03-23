@@ -56,7 +56,7 @@ class AttitudeController:
         e = array([dcm[2][1] - dcm[1][2], dcm[0][2] - dcm[2][1], dcm[1][0] - dcm[0][1]]);
         Ie = self.integrator.integrate(e, t);
         T = 0.5 * (e * K + Ie * Ki) + omega * Kd;
-        return T;
+        return dcm.T.dot(T);
 
 class IOConverterParam:
     def __init__(self, r1, r2, d1, d2, d3):
